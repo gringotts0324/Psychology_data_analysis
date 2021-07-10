@@ -63,14 +63,14 @@ def individual(df_raw, alpha):
   label = list(conditions.keys())
   c1 = "#1E7F00"
   c2 = "#444444"
-  color = [c1, c2, c1, c2, c2, c2]
+  color_list = [c1, c2, c1, c2, c2, c2]
   ax1 = fig.add_subplot(2, 1, 1)
-  ax1.bar(left, height_ACC, tick_label = label, color = color, align = "center")  
+  ax1.bar(left, height_ACC, tick_label = label, color = color_list, align = "center")  
   ax1.set_title("ACC")
 
   height_RT = RTlist
   ax2 = fig.add_subplot(2, 1, 2)
-  ax2.bar(left, height_RT, tick_label = label, align = "center")
+  ax2.bar(left, height_RT, tick_label = label, color = color_list, align = "center")
   ax2.set_title("RT")
   
   plt.tight_layout
