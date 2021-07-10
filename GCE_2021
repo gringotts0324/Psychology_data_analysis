@@ -49,3 +49,9 @@ def individual(df_raw, alpha):
     rt = df2["RT"].mean()
     print("RT=", rt)
     
+#Append list   
+    ACClist.append(acc)
+    RTlist.append(rt) 
+  
+  print(ACClist)
+  print(RTlist)
