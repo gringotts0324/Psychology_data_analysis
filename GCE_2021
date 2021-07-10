@@ -39,9 +39,9 @@ def individual(df_raw, alpha):
     mean = df_w_res["RT"].mean()
     print("SD=", stdvs)
     print("M=", mean)
-    df_outlier = df_w_res[(df_w_res["RT"] < mean-alpha*stdvs) | (df_w_res["RT"] > mean+alpha*stdvs)]
+    df_outlier = df_w_res[(df_w_res["RT"] < mean-alpha*stdvs) | (df_w_res["RT"] > mean+alpha*stdvs) | (df_w_res["RT"] < 100)]
     print(df_outlier)
-    df_wo_outlier = df_w_res[(df_w_res["RT"] >= mean-alpha*stdvs) & (df_w_res["RT"] <= mean+alpha*stdvs)]
+    df_wo_outlier = df_w_res[(df_w_res["RT"] >= mean-alpha*stdvs) & (df_w_res["RT"] <= mean+alpha*stdvs) & (df_w_res["RT"] > 100)]
     df2 = df_wo_outlier
     print(df2)
 
