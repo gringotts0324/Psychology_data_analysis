@@ -44,6 +44,10 @@ def individual(df_raw, alpha):
     df_wo_outlier = df_w_res[(df_w_res["RT"] >= mean-alpha*stdvs) & (df_w_res["RT"] <= mean+alpha*stdvs) & (df_w_res["RT"] > 100)]
     df2 = df_wo_outlier
     print(df2)
+   
+# Correct Response only
+		#df_correct = df2[df["ACC"] == 1]
+		#print(df_correct)
 
 # RT
     rt = df2["RT"].mean()
