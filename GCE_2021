@@ -1,0 +1,51 @@
+def individual(df_raw, alpha): 
+ # 2021_trust_GCE
+
+  # pip install pandas 
+  # pip install numpy
+  # import pandas as pd 
+  # import numpy as np 　
+  # df_raw = pd.read_csv("csv_name")
+
+# variavble name
+  RESP = ""
+  Validity = ""
+  SOA = ""
+  ACC = ""
+  RT = ""
+  
+# sorting
+  conditions = {"condition1" : ["valid", 50], "condition2" : ["invalid", 300]}
+  # conditions = {"condition1" : ["valid", "iihito", "450"], "condition2": ["valid", "iihito", "1000"], "condition3": ["valid", "waruihito", "450"], "condition4" : ["valid", "waruihito", "1000"], "condition5" : ["valid", "darasinai","450], "condition6":["valid", "darasinai", "1000"] , "condition7" : ["invalid", "iihito", "450"], "condition8": ["invalid", "iihito", "1000"], "condition9": ["invalid", "waruihito", "450"], "condition10" : ["invalid", "waruihito", "1000"], "condition11" : ["invalid", "darasinai","450], "condition12":["invalid", "darasinai", "1000"] }
+  for condition in conditions.values():
+    df = df_raw[(df_raw["Validity"] == condition[0]) & (df_raw["SOA"] == condition[1]) ]
+
+# basic statistical info
+    describe_df = df.describe()
+    print(describe_df)
+# count the number of no-response trials and calculate its percentage
+    no_res_df = df[df["RESP"].isnull()]
+    print(no_res_df)
+    no_res_count = no_res_df.count()
+    print(no_res_count)
+
+# ACC
+    df_w_res = df[(df["RESP"] == "f") | (df["RESP"] == "j")]
+    acc = df_w_res["ACC"].mean()
+    print("ACC=", acc)
+
+# Outlier removal
+    stdvs = df_w_res["RT"].std()
+    mean = df_w_res["RT"].mean()
+    print("SD=", stdvs)
+    print("M=", mean)
+    df_outlier = df_w_res[(df_w_res["RT"] < mean-alpha*stdvs) | (df_w_res["RT"] > mean+alpha*stdvs)]
+    print(df_outlier)
+    df_wo_outlier = df_w_res[(df_w_res["RT"] >= mean-alpha*stdvs) & (df_w_res["RT"] <= mean+alpha*stdvs)]
+    df2 = df_wo_outlier
+    print(df2)
+
+# RT
+    rt = df2["RT"].mean()
+    print("RT=", rt)
+    
