@@ -18,6 +18,7 @@ def individual(df_raw, alpha):
   
   ACClist = []
   RTlist = []
+  NoResP = []
 
 # sorting
   conditions = {"condition1" : ["valid", "iihito", 450], "condition2": ["valid", "iihito", 1000], "condition3": ["valid", "waruihito", 450], "condition4" : ["valid", "waruihito", 1000], "condition5" : ["valid", "darasinai", 450], "condition6":["valid", "darasinai", 1000] , "condition7" : ["invalid", "iihito", 450], "condition8": ["invalid", "iihito", 1000], "condition9": ["invalid", "waruihito", 450], "condition10" : ["invalid", "waruihito", 1000], "condition11" : ["invalid", "darasinai", 450], "condition12":["invalid", "darasinai", 1000] }
@@ -29,9 +30,10 @@ def individual(df_raw, alpha):
     #print(describe_df)
 # count the number of no-response trials and calculate its percentage
     no_res_df = df[df[RESP].isnull()]
-    print(no_res_df)
+    #print(no_res_df)
     no_res_count = no_res_df.count()
-    print(no_res_count)
+    #print("NoRes=", no_res_count)
+    #NoRes = no_res_count / 432 
 
 # ACC
     df_w_res = df[(df[RESP] == "f") | (df[RESP] == "j")]
@@ -60,9 +62,18 @@ def individual(df_raw, alpha):
 #Append list   
     ACClist.append(acc)
     RTlist.append(rt) 
+    #NoResP.append(NoRes)
   
   print(ACClist)
   print(RTlist)
+
+  RoundACC = np.round(ACClist, decimals = 2)
+  RoundRT = np.round(RTlist, decimals = 2)
+
+  print(RoundACC)
+  print(RoundRT)
+  #print(NoResP)
+  
 
 # Bar grapth
 """
