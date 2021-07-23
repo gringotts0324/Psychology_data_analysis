@@ -1,0 +1,110 @@
+import pandas as pd
+import numpy as np
+
+def trust_analysis(alpha):
+  participants =  2
+  count = 1 
+
+  log = pd.DataFrame([], columns=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"] , index=range(1, 2))
+
+  while count < participants + 1:
+    df_raw = pd.read_csv("trust_s" + str(count) + ".csv", header=1)
+    count += 1    
+
+    # variavble name
+    Resp1 = "FaceAndTarget.RESP"
+		Resp2 = ""
+    Validity = "validity"
+    SOA = "SOA"
+		ACC1 = ""
+    ACC2 = ""   
+    RT1 = "FaceAndTarget.RT"
+		RT2 = "FaceAndTarget.RT"
+
+	# 今回だけのための処理
+		df_raw.loc[df_raw[ACC2].isnull, "ACC"] = df_raw[ACC1]
+		df_raw.loc[df_raw[ACC1].isnull, "ACC"] = df_raw[ACC2]
+
+		df_raw.loc[df_raw[RT2].isnull(), "RT"] = df_raw[RT1]
+		df_raw.loc[df_raw[RT1].isnull(), "RT"] = df_raw[RT2]
+
+		df_raw.loc[df_raw[Resp2].isnull(), "Resp"] = df_raw[Resp1]
+		df_raw.loc[df_raw[Resp1].isnull(), "Resp"] = df_raw[Resp2]
+
+		RESP = "Resp"
+		
+    ACClist = []
+    RTlist = []
+    NoReslist = []
+    Outlierlist = []
+
+  # sorting
+    conditions = {"condition1" : ["valid", "iihito", 450], "condition2": ["valid", "iihito", 1000], "condition3": ["valid", "waruihito", 450], "condition4" : ["valid", "waruihito", 1000], "condition5" : ["valid", "darasinai", 450], "condition6":["valid", "darasinai", 1000] , "condition7" : ["invalid", "iihito", 450], "condition8": ["invalid", "iihito", 1000], "condition9": ["invalid", "waruihito", 450], "condition10" : ["invalid", "waruihito", 1000], "condition11" : ["invalid", "darasinai", 450], "condition12":["invalid", "darasinai", 1000] }
+    for condition in conditions.values():
+      df = df_raw[(df_raw[Validity] == condition[0]) & (df_raw["hito"] == condition[1]) & (df_raw[SOA] == condition[2] ) ]
+
+  # basic statistical info
+      describe_df = df.describe()
+      #print(describe_df)
+  # count the number of no-response trials and calculate its percentage
+      no_res_df = df[df[RESP].isnull()]
+      #print(no_res_df)
+      no_res_count = len(no_res_df.index)
+      #print("NoRes=", no_res_count)
+
+  # ACC
+      df_w_res = df[(df[RESP] == "f") | (df[RESP] == "j")]
+      acc = df_w_res[ACC].mean()
+      #print("ACC=", acc)
+
+  # Outlier removal
+      #stdvs = df_w_res[RT].std()
+      #STDEV.P
+      stdvs = np.std(df_w_res[RT])
+      mean = df_w_res[RT].mean()
+      #print("SD=", stdvs)
+      #print("M=", mean)
+      df_outlier = df_w_res[(df_w_res[RT] < mean-alpha*stdvs) | (df_w_res[RT] > mean+alpha*stdvs) | (df_w_res[RT] < 100)]
+      outlier_count = len(df_outlier.index)
+      #print(outlier_p)
+      df_wo_outlier = df_w_res[(df_w_res[RT] >= mean-alpha*stdvs) & (df_w_res[RT] <= mean+alpha*stdvs) & (df_w_res[RT] > 100)]
+      df2 = df_wo_outlier
+      #print(df2)
+
+  # Correct Response only
+      df_correct = df2[df2[ACC] == 1]
+      #print(df_correct)
+
+  # RT
+      rt = df_correct[RT].mean()
+      #print("RT=", rt)
+    
+  #Append list   
+      ACClist.append(acc)
+      RTlist.append(rt) 
+      NoReslist.append(no_res_count)
+      Outlierlist.append(outlier_count)
+    
+    #print(ACClist)
+    #print(RTlist)
+
+    RoundACC = np.round(ACClist, decimals = 2)
+    listACC = list(RoundACC) 
+    RoundRT = np.round(RTlist, decimals = 2)
+    listRT = list(RoundRT)
+
+    print("s" + str(count-1) + "ACC", listACC)
+    print("s" + str(count-1) + "RT", listRT)
+    print("s" + str(count-1) + "NoRes", NoReslist)
+    print("s" + str(count-1) + "Outlier", Outlierlist)
+
+    logACC.loc[count-1,:] = listACC
+    logRT.loc[count-1,:] = listRT
+    logNoRes.loc[count-1,:] = NoReslist
+    logOutlier.loc[count-1,:] = Outlierlist
+
+  display(logACC)  
+  display(logRT)
+  display(logNoRes)
+  display(logOutlier)
+  display(log)
