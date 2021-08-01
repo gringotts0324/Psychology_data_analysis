@@ -1,4 +1,4 @@
-def IRI(csv, scoring_csv):
+def IRI(csv, scoring_csv, participants):
   import pandas as pd
   import numpy as np
   df_raw = pd.read_csv(csv, encoding="shift-jis")
@@ -9,9 +9,76 @@ def IRI(csv, scoring_csv):
   list = []
   for i in range(1, 29):
     list.append(i)
+
+  list_participants = []
+  for i in range(1, participants + 1):
+    list_participants.append(i)
   
   df_score_2 = df_score_1.set_axis(list, axis = 1)
-  df_scoring_2 = df_scoring.set_axis(list, axis=1)
+  df_score_2 = df_score_2.set_axis(list_participants, axis = 0)
+  df_scoring_2 = df_scoring.set_axis(["type", "inverse"], axis = 0)
+  df_scoring_3 = df_scoring_2.set_axis(list, axis=1)
 
-  df = pd.concat([df_scoring_2, df_score_2])
-  display(df) 
+  df = pd.concat([df_scoring_3, df_score_2])
+  df_t = df.transpose()
+  df_t.loc[df_t["inverse"] == "0", "inverse"] = "n"
+  df_t.loc[df_t["inverse"] == "1", "inverse"] = "y"
+
+  df_t_non = df_t.loc[df_t["inverse"] == "n"] 
+  df_t_inv = df_t.loc[df_t["inverse"] == "y"] 
+
+  score_mapping = {1:5, 2:4, 3:3, 4:2, 5:1}
+  for i in range(1, participants + 1):
+    df_t_inv[i] = df_t_inv[i].map(score_mapping)
+
+  score_mapping = {1:1, 2:2, 3:3, 4:4, 5:5}
+  for i in range(1, participants + 1):
+    df_t_non[i] = df_t_non[i].map(score_mapping)
+
+  df2 = pd.concat([df_t_non, df_t_inv])
+
+  df_FS = df2.loc[df2["type"] == "FS"]
+  df_EC = df2.loc[df2["type"] == "EC"]
+  df_PD = df2.loc[df2["type"] == "PD"]
+  df_PT = df2.loc[df2["type"] == "PT"]
+
+  display(df_FS)
+
+  types = ["df_FS", "df_EC", "df_PD", "df_PT"]
+  types_raw = ["Total", "FS", "EC", "PD", "PT"]
+  list_total = []
+  list_FS = []
+  list_EC = []
+  list_PD = []
+  list_PT = []
+
+  for i in range(1, participants + 1):
+    s = df2[i].sum()
+    list_total.append(s)
+  df_total = pd.DataFrame(list_total)
+
+  for i in range(1, participants + 1):
+    s = df_FS[i].sum()
+    list_FS.append(s)
+  df_FS_score = pd.DataFrame(list_FS)
+
+  for i in range(1, participants + 1):
+    s = df_EC[i].sum()
+    list_EC.append(s)
+  df_EC_score = pd.DataFrame(list_EC)
+
+  for i in range(1, participants + 1):
+    s = df_PD[i].sum()
+    list_PD.append(s)
+  df_PD_score = pd.DataFrame(list_PD)
+
+  for i in range(1, participants + 1):
+    s = df_PT[i].sum()
+    list_PT.append(s)
+  df_PT_score = pd.DataFrame(list_PT)
+
+  df4 = pd.concat([df_total, df_FS_score, df_EC_score, df_PD_score, df_PT_score])
+  df5 = df4.set_axis(types_raw, axis = 0) 
+  df5 = df5.set_axis(list_participants, axis = 1)
+
+  display(df5)
